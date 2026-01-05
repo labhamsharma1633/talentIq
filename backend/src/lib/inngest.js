@@ -5,22 +5,22 @@ import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 export const inngest = new Inngest({ id: "talent-iq" });
 
-const syncUser = inngest.createFunction(
+const syncUser = inngest.createFunction(   // whenever clerk create a user run this function
   { id: "sync-user" },
   { event: "clerk/user.created" },
   async ({ event }) => {
-    await connectDB();
+    await connectDB();  //connect database
 
-    const { id, email_addresses, first_name, last_name, image_url } = event.data;
+    const { id, email_addresses, first_name, last_name, image_url } = event.data; // extract user data from clerk
 
-    const newUser = {
+    const newUser = {  //create new object
       clerkId: id,
       email: email_addresses[0]?.email_address,
       name: `${first_name || ""} ${last_name || ""}`,
       profileImage: image_url,
     };
 
-    await User.create(newUser);
+    await User.create(newUser);  //save user in MongoDB
 
     await upsertStreamUser({
       id: newUser.clerkId.toString(),

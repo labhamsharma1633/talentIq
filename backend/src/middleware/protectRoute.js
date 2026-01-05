@@ -5,30 +5,21 @@ export const protectRoute = [
   requireAuth(),
   async (req, res, next) => {
     try {
-      const clerkId = req.auth.userId; // ✅ no () — it's a property, not a function
+      const clerkId = req.auth().userId;
 
-      if (!clerkId)
-        return res.status(401).json({ message: "Unauthorized - invalid token" });
+      if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
 
-      // Find existing user or create if missing
-      let user = await User.findOne({ clerkId });
+      // find user in db by clerk ID
+      const user = await User.findOne({ clerkId });
 
-      if (!user) {
-        user = await User.create({
-          clerkId,
-          name: req.auth.sessionClaims.full_name || "New User",
-          email: req.auth.sessionClaims.email || "unknown@example.com",
-          profileImage:
-            req.auth.sessionClaims.image_url ||
-            "https://cdn-icons-png.flaticon.com/512/847/847969.png",
-        });
-        console.log("🆕 Created new user:", user.name);
-      }
+      if (!user) return res.status(404).json({ message: "User not found" });
 
+      // attach user to req
       req.user = user;
+
       next();
     } catch (error) {
-      console.error("Error in protectRoute middleware:", error);
+      console.error("Error in protectRoute middleware", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
