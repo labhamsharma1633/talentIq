@@ -4,7 +4,6 @@ import Navbar from "../components/Navbar";
 import { PROBLEMS } from "../data/problems";
 import { ChevronRightIcon, Code2Icon } from "lucide-react";
 import { getDifficultyBadgeClass } from "../lib/utils";
-import { useState } from "react";
 
 function ProblemsPage() {
   const problems = Object.values(PROBLEMS);
