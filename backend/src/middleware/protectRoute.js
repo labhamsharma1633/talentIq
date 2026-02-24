@@ -1,25 +1,40 @@
-import { requireAuth } from "@clerk/express";
+import { requireAuth, clerkClient } from "@clerk/express";
 import User from "../models/User.js";
 
 export const protectRoute = [
   requireAuth(),
   async (req, res, next) => {
     try {
-      const clerkId = req.auth().userId;
+      const { userId } = req.auth();
 
-      if (!clerkId) return res.status(401).json({ message: "Unauthorized - invalid token" });
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
 
-      // find user in db by clerk ID
-      const user = await User.findOne({ clerkId });
+      let user = await User.findOne({ clerkId: userId });
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+      // 🔥 If user doesn't exist → fetch from Clerk
+      if (!user) {
+        const clerkUser = await clerkClient.users.getUser(userId);
 
-      // attach user to req
+        const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+        const firstName = clerkUser.firstName || "";
+        const lastName = clerkUser.lastName || "";
+
+        user = await User.create({
+          clerkId: userId,
+          email: email,
+          name: `${firstName} ${lastName}`.trim() || "No Name",
+          profileImage: clerkUser.imageUrl || "",
+        });
+
+        console.log("New user created:", user.email);
+      }
+
       req.user = user;
-
       next();
     } catch (error) {
-      console.error("Error in protectRoute middleware", error);
+      console.error("Error in protectRoute middleware:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
