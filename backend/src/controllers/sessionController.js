@@ -1,4 +1,4 @@
-import { chatClient, streamClient } from "../lib/stream.js";
+import { chatClient, streamClient,upsertStreamUser } from "../lib/stream.js";
 import Session from "../models/Session.js";
 
 export async function createSession(req, res) {
@@ -16,6 +16,12 @@ export async function createSession(req, res) {
 
     // create session in db
     const session = await Session.create({ problem, difficulty, host: userId, callId });
+      // upsert stream user
+      await upsertStreamUser({
+        id: clerkId,
+        name: req.user.name || "User",
+        image: req.user.profileImage || "",
+      });
 
     // create stream video call
     await streamClient.video.call("default", callId).getOrCreate({
