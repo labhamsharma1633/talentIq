@@ -11,6 +11,8 @@ import SessionPage from "./pages/SessionPage";
 function App() {
   const { isSignedIn, isLoaded } = useUser();
 
+  console.log("BASE URL:", import.meta.env.VITE_BACKEND_URL);
+
   // this will get rid of the flickering effect
   if (!isLoaded) return null;
 
