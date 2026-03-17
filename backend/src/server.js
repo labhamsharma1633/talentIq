@@ -18,7 +18,7 @@ const __dirname = path.resolve();
 // middleware
 app.use(express.json());
 // credentials:true meaning?? => server allows a browser to include cookies on request
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
 app.use(clerkMiddleware()); // this adds auth field to request object: req.auth()
 
 app.use(
@@ -26,6 +26,8 @@ app.use(
     origin: (origin, callback) => {
       const allowedOrigins = [
         "https://talent-iq-lyart.vercel.app",
+        "https://talent-kxekh1tar-labham-sharmas-projects.vercel.app",
+
       ];
 
       if (!origin || allowedOrigins.includes(origin)) {
