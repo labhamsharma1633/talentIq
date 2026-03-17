@@ -27,6 +27,8 @@ app.use(
       const allowedOrigins = [
         "https://talent-iq-lyart.vercel.app",
         "https://talent-kxekh1tar-labham-sharmas-projects.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:5174",
 
       ];
 
