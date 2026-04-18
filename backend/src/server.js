@@ -18,34 +18,12 @@ const __dirname = path.resolve();
 // middleware
 app.use(express.json());
 // credentials:true meaning?? => server allows a browser to include cookies on request
-
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(clerkMiddleware()); // this adds auth field to request object: req.auth()
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "https://talent-iq-lyart.vercel.app",
-        "https://talent-kxekh1tar-labham-sharmas-projects.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:5174",
-
-      ];
-
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
-app.get("/", (req, res) => {
-  res.send("API is running 🚀");
-});
 
 app.get("/health", (req, res) => {
   res.status(200).json({ msg: "api is up and running" });

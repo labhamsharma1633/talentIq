@@ -6,6 +6,7 @@ const LANGUAGE_VERSIONS = {
   javascript: { language: "javascript", version: "18.15.0" },
   python: { language: "python", version: "3.10.0" },
   java: { language: "java", version: "15.0.2" },
+  cpp: { language: "cpp", version: "10.2.0" }, // ✅ Added C++
 };
 
 /**
@@ -50,13 +51,13 @@ export async function executeCode(language, code) {
 
     const data = await response.json();
 
-    const output = data.run.output || "";
-    const stderr = data.run.stderr || "";
+    const output = data?.run?.output || "";
+    const stderr = data?.run?.stderr || "";
 
     if (stderr) {
       return {
         success: false,
-        output: output,
+        output,
         error: stderr,
       };
     }
@@ -78,6 +79,7 @@ function getFileExtension(language) {
     javascript: "js",
     python: "py",
     java: "java",
+    cpp: "cpp", // ✅ Added C++
   };
 
   return extensions[language] || "txt";
