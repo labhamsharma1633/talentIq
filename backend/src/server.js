@@ -18,7 +18,7 @@ app.set("trust proxy", 1);
 // ✅ Allowed origins (local + production)
 const allowedOrigins = [
   "http://localhost:5173",
-  ENV.CLIENT_URL || "",
+  "https://talent-iq11-three.vercel.app",
 ];
 
 // middleware
@@ -31,6 +31,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log("Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
